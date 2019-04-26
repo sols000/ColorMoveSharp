@@ -5,33 +5,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ColorMoveUI"
              mc:Ignorable="d" 
-             d:DesignHeight="360" d:DesignWidth="550">
+             d:DesignHeight="360" d:DesignWidth="550" Width="602" Height="460">
+
     <Grid Background="#FF8BC9AD">
-        <Grid Margin="0,0,0,30">
-            <DataGrid x:Name="ColorDataGrid" Margin="100,0">
-                <DataGrid.Columns>
-                    <DataGridTextColumn x:Name="Column1" Header="红色" Foreground="Black" MinWidth="70" CanUserSort="False" CanUserResize="False"/>
-                    <DataGridTextColumn x:Name="Column2" Header="橙色" MinWidth="70" CanUserSort="False" CanUserResize="False"/>
-                    <DataGridTextColumn x:Name="Column3" Header="黄色" MinWidth="70" CanUserSort="False" CanUserResize="False"/>
-                    <DataGridTextColumn x:Name="Column4" Header="绿色" MinWidth="70" CanUserSort="False" CanUserResize="False"/>
-                    <DataGridTextColumn x:Name="Column5" Header="蓝色" MinWidth="70" CanUserSort="False" CanUserResize="False"/>
-                </DataGrid.Columns>
-            </DataGrid>
+        <Grid Margin="0,0,0,30" RenderTransformOrigin="0.5,0.5">
+            <DataGrid x:Name="ColorDataGrid" Margin="100,0" MinColumnWidth="80" CanUserAddRows="False" RowHeight="40" CanUserResizeRows="False" SelectionMode="Single" Focusable="False"
+                      CellStyle="{DynamicResource ColorDataGridCellStyle}" Foreground="Black" Background="#FFD4D4D4" SelectionUnit="Cell" CanUserSortColumns="False" 
+                      CanUserResizeColumns="False" ColumnHeaderHeight="30" HeadersVisibility="Column" AutomationProperties.IsColumnHeader="True" IsReadOnly="True" RenderTransformOrigin="0.5,0.5"/>
         </Grid>
-        <Grid HorizontalAlignment="Left" Height="360" VerticalAlignment="Top" Width="100" Background="#FFA08888">
-            <ListBox Margin="0,25,0,0"/>
-            <Label Content="历史记录" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        <Grid HorizontalAlignment="Left" Width="100" Background="#FF90D7DE">
+            <ListBox Margin="0,30,0,0"/>
+            <Label Content="历史记录" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,3,0,0"/>
         </Grid>
-        <Grid HorizontalAlignment="Right" Background="#FF977777" Width="100">
-            <StackPanel Orientation="Vertical" Margin="0,0,0,30" VerticalAlignment="Bottom">
-                <Button Content="初始化" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
-                <Button Content="打乱顺序" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
+        <Grid HorizontalAlignment="Right" Background="#FF89C9C9" Width="100">
+            <StackPanel Orientation="Vertical" Margin="0" VerticalAlignment="Bottom">
+                <Button x:Name="InitBtn" Content="初始化" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10" Click="InitBtn_Click"/>
+                <Button x:Name="ShuffleBtn" Content="打乱顺序" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10" Click="ShuffleBtn_Click"/>
                 <Button Content="开始演示" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
                 <Button Content="暂停" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
                 <Button Content="上一步" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
                 <Button Content="下一步" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
+                <Button x:Name="TestBtn" Content="测试" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="15,0,15,10" Click="TestBtn_Click"/>
             </StackPanel>
-            <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="70" Margin="15,25,15,0" Height="20"/>
+            <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="70" Margin="15,30,15,0" Height="20"/>
             <Label Content="延时（ms）" HorizontalAlignment="Left" Margin="15,0,0,0" VerticalAlignment="Top"/>
         </Grid>
         <Grid VerticalAlignment="Bottom" Margin="100,0" Background="#FFE8E8E8" Height="30">
