@@ -23,8 +23,12 @@
             <Label Content="历史记录" HorizontalAlignment="Center" VerticalAlignment="Top"/>
         </Grid>
         <Grid HorizontalAlignment="Right" Background="#FF977777" Width="100">
-            <Button Content="上一步" HorizontalAlignment="Center" Height="40" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,100"/>
-            <Button Content="下一步" HorizontalAlignment="Center" Height="40" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,28"/>
+            <Button Content="上一步" HorizontalAlignment="Center" Height="40" VerticalAlignment="Bottom" Width="70" Margin="15,0,15,80"/>
+            <Button Content="下一步" HorizontalAlignment="Center" Height="40" VerticalAlignment="Bottom" Width="70" Margin="15,0,15,20"/>
+            <Button Content="开始演示" HorizontalAlignment="Center" Height="40" VerticalAlignment="Bottom" Width="70" Margin="15,0,15,210"/>
+            <Button Content="自动完成" HorizontalAlignment="Center" Height="40" VerticalAlignment="Bottom" Width="70" Margin="15,0,15,280"/>
+            <Button Content="暂停" HorizontalAlignment="Center" Height="40" VerticalAlignment="Bottom" Width="70" Margin="15,0,15,145"/>
+            <Label Content="操作台" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="21,0"/>
         </Grid>
 
     </Grid>
