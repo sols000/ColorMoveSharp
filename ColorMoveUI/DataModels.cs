@@ -25,6 +25,38 @@ namespace ColorMoveUI
             ColumnFrom = ColumnTo;
             ColumnTo = Temp;
         }
+
+        public bool isValid()
+        {
+            if(ColumnFrom >=0 && ColumnTo>=0 && Number>0)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public void Reset()
+        {
+            ColumnFrom = -1;
+            ColumnTo = -1;
+            Number = 0;
+        }
+    }
+
+
+    public class BreakState: IComparable<BreakState>
+    {
+        public int Column;
+        public bool canBreak;
+        public bool isPerFect;
+        public bool isSingleColor;
+        public int EmptySpace;
+        public int TopColorCount;
+
+        public int CompareTo(BreakState other)
+        {
+            return EmptySpace.CompareTo(other.EmptySpace);
+        }
     }
 
 }

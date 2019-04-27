@@ -346,18 +346,217 @@ namespace ColorMoveUI
             return Res;
         }
 
-        
-        
-        ///////////////////算法部分/////////////////////////
+        private bool IsGameSuccess()
+        {
+            for(int i= 0;i<5 ;i++)
+            {
+                for(int j=0;j<5 ;j++)
+                {
+                    if ((int)CSet.Rows[i][j] != j+1)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
 
+        ///////////////////算法部分/////////////////////////
+        Step AnOtherBreakStep = new Step();
         private void Step()
         {
-            m_StepList.Clear();
-            MoveTo(ScanStepList());
+            if (AnOtherBreakStep.isValid())
+            {
+                MoveTo(AnOtherBreakStep);
+                AnOtherBreakStep.Reset();
+                Console.WriteLine("额外打破");
+            }
+
+            Step TempStep = ScanStepList();
+            if(TempStep.ColumnFrom == -1 || TempStep.ColumnTo == -1)
+            {//移不动了呀
+                //判断是否已经完成
+                if(IsGameSuccess())
+                {
+                    Console.WriteLine("游戏成功了呀");
+                }
+                else
+                {
+                    Console.WriteLine("移不动了呀，进入解锁过程");
+                    BreakStep();
+                }
+                //未完成则进入解锁阶段
+            }
+            else
+            {
+                MoveTo(TempStep);
+            }
             Console.WriteLine("================");
         }
+
+        //判断某一行是否完全正确
+        private bool IsPerfect(int column)
+        {
+            for(int i=0; i<5;i++)
+            {
+                if((int)CSet.Rows[i][column] != column + 1)
+                {
+                    return false;
+                }
+            }
+            for (int i = 5; i < NRow; i++)
+            {
+                if ((int)CSet.Rows[i][column] != 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        bool CanBreak(int column)
+        {
+            for (int i = 0; i < NRow; i++)
+            {
+                if((int)CSet.Rows[i][column] == 0)
+                {
+                    return false;
+                }
+                else if ((int)CSet.Rows[i][column] != column + 1)
+                {
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
+        bool IsSingleColor(int column)
+        {
+            int ResColor = (int)CSet.Rows[0][column];
+            for (int i = 1; i < NRow; i++)
+            {
+                if ((int)CSet.Rows[i][column] == 0)
+                {
+                    return true;
+                }
+                else if ((int)CSet.Rows[i][column] != ResColor)
+                {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        int GetSapceCount(int column)
+        {
+            int count = 0;
+            for (int i = NRow-1; i >=0 ; i--)
+            {
+                if ((int)CSet.Rows[i][column] == 0)
+                {
+                    count++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return count;
+        }
+
+        private int TopColorCount(int column)
+        {
+            int TopColor = GetTopColor(column);
+            int Count = 0;
+            for (int i = NRow - 1; i >= 0; i--)
+            {
+                if ((int)CSet.Rows[i][column] == TopColor)
+                {
+                    Count++;
+                }else if((int)CSet.Rows[i][column] == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return Count;
+        }
+
+        //获取指定列的BreakStats
+        BreakState GetBreakStats(int column)
+        {
+            BreakState res = new BreakState();
+            res.Column = column;
+            res.isPerFect = IsPerfect(column);
+            res.canBreak = CanBreak(column);
+            res.EmptySpace = GetSapceCount(column);
+            res.isSingleColor = IsSingleColor(column);
+            res.TopColorCount = TopColorCount(column);
+
+            return res;
+        }
+
+        BreakState[] breakStats = new BreakState[NCol];
+        //这里可能会设置 AnOtherBreakStep 下一步打破步骤，避免回测
+        private void BreakStep()
+        {
+            //遍历容器，设置breakStats
+            for(int i = 0; i<NCol;i++)
+            {
+                breakStats[i] = GetBreakStats(i);
+            }
+            Console.WriteLine("初始化打破死锁状态完毕");
+            //查找需要打破的列数，
+            int BreakColumn = GetBreakColumn();
+
+            Console.WriteLine("很麻烦呀"+ BreakColumn);
+
+        }
+
+        //获取尝试打破的列数
+        private int GetBreakColumn()
+        {
+            //尝试找最小单色可破列
+            int Column = -1;
+            List<BreakState> TempList = new List<BreakState>();
+            for (int i = 0; i < NCol; i++)
+            {
+                if (breakStats[i].canBreak && breakStats[i].isSingleColor)
+                {
+                    TempList.Add(breakStats[i]);
+                }
+            }
+            if(TempList.Count==1)
+            {
+                return TempList[0].Column;
+            }
+            else if(TempList.Count > 1)
+            {
+                return TempList.Max().Column;
+            }
+            //
+            //尝试打破最
+            List<BreakState> TempNoSingle = new List<BreakState>();
+            int TempTopColorCount = 6;
+
+            for (int i =0; i<NCol;i++)
+            {
+                if (breakStats[i].canBreak && breakStats[i].TopColorCount< TempTopColorCount)
+                {
+                    TempTopColorCount = (int)breakStats[i].TopColorCount;
+                    Column = i;
+                }
+            }
+            return Column;
+        }
+
+        //历史记录
         List<Step> m_HistoryStep = new List<Step>();
-        List<Step> m_StepList = new List<Step>();
         //找到一个步骤
         private Step ScanStepList()
         {
