@@ -66,6 +66,7 @@ namespace ColorMoveUI
         //重置数据
         public void ReSetColorData()
         {
+            m_HistoryStep.Clear();
             CSet.Rows.Clear();
             for (int i = 0; i < 5; i++)
             {
@@ -92,22 +93,30 @@ namespace ColorMoveUI
 
         private void TestBtn_Click(object sender, RoutedEventArgs e)
         {
+            RandomStep();
+        }
+
+        //随机步骤
+        private void RandomStep()
+        {
+            int FormC = GRandom.Next(0, 5);
+            int FormT = GRandom.Next(0, 5);
+            int Count = GRandom.Next(1, 3);
+            MoveTo(FormC, FormT, Count);
+            UpdateView();
+        }
+
+        //自动随机步骤
+        private void AutoRandomStep()
+        {
             bAutoRun = true;
             Task.Run(new Action(() =>
             {
                 for (int i = 0; i < 10000; i++)
                 {
                     Thread.Sleep(10);
-                    Dispatcher.Invoke(new Action(() =>
-                    {
-                        int FormC = GRandom.Next(0, 5);
-                        int FormT = GRandom.Next(0, 5);
-                        int Count = GRandom.Next(1, 4);
-                        MoveTo(FormC, FormT, Count);
-                        UpdateView();
-                    }
-                    ));
-                    if(bAutoRun == false)
+                    Dispatcher.Invoke(RandomStep);
+                    if (bAutoRun == false)
                     {
                         return;
                     }
@@ -227,6 +236,16 @@ namespace ColorMoveUI
             return true;
         }
 
+        private bool MoveTo(Step step, bool record = true)
+        {
+            bool Res = MoveTo(step.ColumnFrom,step.ColumnTo,step.Number);
+            if(Res && record)
+            {
+                m_HistoryStep.Add(step);
+            }
+            return Res;
+        }
+
         private void PulseBtn_Click(object sender, RoutedEventArgs e)
         {
             bAutoRun = false;
@@ -234,18 +253,129 @@ namespace ColorMoveUI
 
         private void NextStepBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            Step();
         }
 
+        private void PreStepBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (m_HistoryStep.Count <= 0)
+            {
+                return;
+            }
+            Step Temp = m_HistoryStep[m_HistoryStep.Count-1];
+            m_HistoryStep.Remove(Temp);
+            //m_HistoryStep.RemoveAt(m_HistoryStep.Count-1);
+            Temp.inverse();
+            MoveTo(Temp,false);
+        }
 
+        //获取顶点颜色值
+        int GetTopColor(int column)
+        {
+            int Count = GetColumnCount(column);
+            if(Count == 0)
+            {
+                return column+1;
+            }
+            else
+            {
+                return (int)CSet.Rows[Count-1][column];
+            }
+        }
+
+        Step GetLestMoveTo(int Column)
+        {
+            int TopColor = GetTopColor(Column);
+            int ColumnCount = GetColumnCount(Column);
+            Step Res = new Step
+            {
+                ColumnFrom = -1,
+                ColumnTo = Column,
+                Score = 0
+            };
+            int MinMove = 8;
+            for (int i=0; i< NCol;i++)
+            {
+                if(i==Column)
+                {
+                    continue;
+                }
+                int CountNeedMove = 0;
+                for(int j= NRow-1 ; j>=0;j--)
+                {
+                    if((int)CSet.Rows[j][i] == 0)
+                    {
+                        continue;
+                    }else if((int)CSet.Rows[j][i] == TopColor)
+                    {
+                        for (int k = j; k >= 0; k--)
+                        {
+                            if ((int)CSet.Rows[k][i] == TopColor)
+                            {
+                                CountNeedMove++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        if( ColumnCount + CountNeedMove > NRow )
+                        {
+                            break;
+                        }
+                        //固定对应色，
+                        if( i+1 == TopColor && CountNeedMove == GetColumnCount(i))
+                        {
+                            break;
+                        }
+
+                        if (MinMove > CountNeedMove)
+                        {
+                            MinMove = CountNeedMove;
+                            Res.ColumnFrom = i;
+                            Res.Number = MinMove;
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        CountNeedMove++;
+                    }
+                }
+            }
+            return Res;
+        }
+
+        
+        
         ///////////////////算法部分/////////////////////////
 
         private void Step()
         {
-
-
+            m_StepList.Clear();
+            MoveTo(ScanStepList());
+            Console.WriteLine("================");
         }
-
+        List<Step> m_HistoryStep = new List<Step>();
+        List<Step> m_StepList = new List<Step>();
+        //找到一个步骤
+        private Step ScanStepList()
+        {
+            Step MinStep = new Step();
+            MinStep.Number = NRow;
+            //目标地址为i的最佳步骤
+            for (int i=0;i< NCol ;i++)
+            {
+                //查找该颜色的非锁定最高位置
+                Step Temp = GetLestMoveTo(i);
+                if(Temp.ColumnFrom != -1 && MinStep.Number > Temp.Number)
+                {
+                    MinStep = Temp;
+                }
+                Console.WriteLine(Temp);
+            }
+            return MinStep;
+        }
 
 
     }
