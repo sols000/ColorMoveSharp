@@ -91,6 +91,7 @@
     <Compile Include="ColorMovePanel.xaml.cs">
       <DependentUpon>ColorMovePanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataModels.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

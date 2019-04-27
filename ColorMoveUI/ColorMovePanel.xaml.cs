@@ -88,13 +88,16 @@ namespace ColorMoveUI
             ColorDataGrid.ItemsSource = CSet.DefaultView;
         }
 
+        bool bAutoRun = false;
+
         private void TestBtn_Click(object sender, RoutedEventArgs e)
         {
+            bAutoRun = true;
             Task.Run(new Action(() =>
             {
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 10000; i++)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(10);
                     Dispatcher.Invoke(new Action(() =>
                     {
                         int FormC = GRandom.Next(0, 5);
@@ -104,6 +107,10 @@ namespace ColorMoveUI
                         UpdateView();
                     }
                     ));
+                    if(bAutoRun == false)
+                    {
+                        return;
+                    }
                 }
             }));
         }
@@ -219,6 +226,27 @@ namespace ColorMoveUI
             UpdateView();
             return true;
         }
+
+        private void PulseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            bAutoRun = false;
+        }
+
+        private void NextStepBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        ///////////////////算法部分/////////////////////////
+
+        private void Step()
+        {
+
+
+        }
+
+
 
     }
 }

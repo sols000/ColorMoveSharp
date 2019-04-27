@@ -22,9 +22,9 @@
                 <Button x:Name="InitBtn" Content="初始化" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10" Click="InitBtn_Click"/>
                 <Button x:Name="ShuffleBtn" Content="打乱顺序" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10" Click="ShuffleBtn_Click"/>
                 <Button Content="开始演示" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
-                <Button Content="暂停" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
+                <Button x:Name="PulseBtn" Content="暂停" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10" Click="PulseBtn_Click"/>
                 <Button Content="上一步" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
-                <Button Content="下一步" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10"/>
+                <Button x:Name="NextStepBtn" Content="下一步" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="0,0,0,10" Click="NextStepBtn_Click"/>
                 <Button x:Name="TestBtn" Content="测试" HorizontalAlignment="Center" Height="30" VerticalAlignment="Bottom" Width="70" Margin="15,0,15,10" Click="TestBtn_Click"/>
             </StackPanel>
             <TextBox HorizontalAlignment="Center" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="70" Margin="15,30,15,0" Height="20"/>
