@@ -238,6 +238,10 @@ namespace ColorMoveUI
 
         private bool MoveTo(Step step, bool record = true)
         {
+            if(!step.isValid())
+            {
+                return false;
+            }
             bool Res = MoveTo(step.ColumnFrom,step.ColumnTo,step.Number);
             if(Res && record)
             {
@@ -378,6 +382,7 @@ namespace ColorMoveUI
                 //判断是否已经完成
                 if(IsGameSuccess())
                 {
+                    bAutoRun = false;
                     Console.WriteLine("游戏成功了呀");
                 }
                 else
@@ -501,6 +506,92 @@ namespace ColorMoveUI
             return res;
         }
 
+        //此函数会可能会设置 AnOtherBreakStep
+        Step FindFitRowStep(int columnFrom,int needSpace)
+        {
+            int leftNumber = needSpace;
+            Step Res = new Step();
+            Res.ColumnFrom = columnFrom;
+            bool bUseStep2 = false;
+            //完美列
+            List<BreakState> PerfectList = new List<BreakState>();
+            for(int i = 0; i < NCol; i++)
+            {
+                if(breakStats[i].isPerFect)
+                {
+                    PerfectList.Add(breakStats[i]);
+                }
+            }
+
+            if (PerfectList.Count>0)
+            {
+                BreakState PerBS = PerfectList.First();
+                PerfectList.RemoveAt(0);
+                Res.ColumnTo = PerBS.Column;
+                bUseStep2 = true;
+                if (needSpace <= 3)
+                {
+                    Res.Number = needSpace;
+                }
+                else
+                {
+                    Res.Number = 3;
+                    leftNumber -= 3;
+                    //二次移动开始
+                    if(PerfectList.Count > 0)
+                    {
+                        BreakState PerBS1 = PerfectList.First();
+                        PerfectList.RemoveAt(0);
+                        AnOtherBreakStep.ColumnFrom = columnFrom;
+                        AnOtherBreakStep.ColumnTo = PerBS1.Column;
+                        AnOtherBreakStep.Number = leftNumber;
+                    }
+                    else
+                    {
+                        Console.WriteLine("完美列不够用了");
+                    }
+                }
+            }
+            //非完美列
+            List<BreakState> NotOkList = new List<BreakState>();
+            for (int i = 0; i < NCol; i++)
+            {
+                if ( i != columnFrom && !breakStats[i].isPerFect && breakStats[i].EmptySpace > 0)
+                {
+                    NotOkList.Add(breakStats[i]);
+                }
+            }
+            //使用非完美列来填充
+            if (leftNumber > 0)
+            {
+                BreakState NotOkBs = NotOkList.Max();
+                NotOkList.RemoveAt(0);
+                if(bUseStep2)
+                {
+                    AnOtherBreakStep.ColumnFrom = columnFrom;
+                    AnOtherBreakStep.ColumnTo = NotOkBs.Column;
+                    AnOtherBreakStep.Number = leftNumber;
+                }
+                else
+                {
+                    Res.ColumnTo = NotOkBs.Column;
+                    Res.Number = leftNumber;
+                    leftNumber = leftNumber - NotOkBs.EmptySpace;
+                    if (leftNumber>0)
+                    {
+                        Console.WriteLine("还没有弄完呀");
+                    }
+                }
+            }
+
+            return Res;
+        }
+
+        //BreakState GetMaxSpaceBs(List<BreakState> NotOkList)
+        //{
+        //    BreakState
+        //}
+
         BreakState[] breakStats = new BreakState[NCol];
         //这里可能会设置 AnOtherBreakStep 下一步打破步骤，避免回测
         private void BreakStep()
@@ -510,11 +601,13 @@ namespace ColorMoveUI
             {
                 breakStats[i] = GetBreakStats(i);
             }
-            Console.WriteLine("初始化打破死锁状态完毕");
             //查找需要打破的列数，
             int BreakColumn = GetBreakColumn();
-
             Console.WriteLine("很麻烦呀"+ BreakColumn);
+            BreakState needBreakStats = breakStats[BreakColumn];
+            int TopCount = needBreakStats.TopColorCount;
+            Step TempStep = FindFitRowStep(BreakColumn, TopCount);
+            MoveTo(TempStep);
 
         }
 
@@ -576,6 +669,21 @@ namespace ColorMoveUI
             return MinStep;
         }
 
-
+        private void AutoStartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            bAutoRun = true;
+            Task.Run(new Action(() =>
+            {
+                for (int i = 0; i < 10000; i++)
+                {
+                    Thread.Sleep(10);
+                    Dispatcher.Invoke(Step);
+                    if (bAutoRun == false)
+                    {
+                        return;
+                    }
+                }
+            }));
+        }
     }
 }
