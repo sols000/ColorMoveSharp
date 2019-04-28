@@ -68,17 +68,43 @@ namespace ColorMoveUI
         {
             m_HistoryStep.Clear();
             CSet.Rows.Clear();
-            for (int i = 0; i < 5; i++)
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    DataRow row = CSet.NewRow();
+            //    row.ItemArray = new object[NCol] { 1, 2, 3, 4, 5 };
+            //    CSet.Rows.Add(row);
+            //}
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    DataRow row = CSet.NewRow();
+            //    row.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
+            //    CSet.Rows.Add(row);
+            //}
             {
                 DataRow row = CSet.NewRow();
-                row.ItemArray = new object[NCol] { 1, 2, 3, 4, 5 };
+                row.ItemArray = new object[NCol] { 4, 2, 2, 3, 1 };
                 CSet.Rows.Add(row);
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                DataRow row = CSet.NewRow();
-                row.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
-                CSet.Rows.Add(row);
+                DataRow row1 = CSet.NewRow();
+                row1.ItemArray = new object[NCol] { 5, 3, 1, 1, 4 };
+                CSet.Rows.Add(row1);
+                DataRow row2 = CSet.NewRow();
+                row2.ItemArray = new object[NCol] { 2, 3, 4, 2, 5 };
+                CSet.Rows.Add(row2);
+                DataRow row3 = CSet.NewRow();
+                row3.ItemArray = new object[NCol] { 1, 5, 1, 4, 5 };
+                CSet.Rows.Add(row3);
+                DataRow row4 = CSet.NewRow();
+                row4.ItemArray = new object[NCol] { 4, 0, 3, 0, 2 };
+                CSet.Rows.Add(row4);
+                DataRow row5 = CSet.NewRow();
+                row5.ItemArray = new object[NCol] { 0, 0, 5, 0, 3 };
+                CSet.Rows.Add(row5);
+                DataRow row6 = CSet.NewRow();
+                row6.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
+                CSet.Rows.Add(row6);
+                DataRow row7 = CSet.NewRow();
+                row7.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
+                CSet.Rows.Add(row7);
             }
             UpdateView();
         }
@@ -374,6 +400,7 @@ namespace ColorMoveUI
                 MoveTo(AnOtherBreakStep);
                 AnOtherBreakStep.Reset();
                 Console.WriteLine("额外打破");
+                return;
             }
 
             Step TempStep = ScanStepList();
@@ -528,10 +555,11 @@ namespace ColorMoveUI
                 BreakState PerBS = PerfectList.First();
                 PerfectList.RemoveAt(0);
                 Res.ColumnTo = PerBS.Column;
-                bUseStep2 = true;
+                
                 if (needSpace <= 3)
                 {
                     Res.Number = needSpace;
+                    return Res;
                 }
                 else
                 {
@@ -545,9 +573,11 @@ namespace ColorMoveUI
                         AnOtherBreakStep.ColumnFrom = columnFrom;
                         AnOtherBreakStep.ColumnTo = PerBS1.Column;
                         AnOtherBreakStep.Number = leftNumber;
+                        return Res;
                     }
                     else
                     {
+                        bUseStep2 = true;
                         Console.WriteLine("完美列不够用了");
                     }
                 }
@@ -564,6 +594,10 @@ namespace ColorMoveUI
             //使用非完美列来填充
             if (leftNumber > 0)
             {
+                if(NotOkList.Count == 0)
+                {
+                    Console.WriteLine("Count =0");
+                }
                 BreakState NotOkBs = NotOkList.Max();
                 NotOkList.RemoveAt(0);
                 if(bUseStep2)
@@ -607,6 +641,7 @@ namespace ColorMoveUI
             BreakState needBreakStats = breakStats[BreakColumn];
             int TopCount = needBreakStats.TopColorCount;
             Step TempStep = FindFitRowStep(BreakColumn, TopCount);
+            Console.WriteLine(TempStep);
             MoveTo(TempStep);
 
         }
@@ -676,7 +711,7 @@ namespace ColorMoveUI
             {
                 for (int i = 0; i < 10000; i++)
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(100);
                     Dispatcher.Invoke(Step);
                     if (bAutoRun == false)
                     {
