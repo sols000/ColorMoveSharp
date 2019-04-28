@@ -44,6 +44,9 @@ namespace ColorMoveUI
         const string strBlu = "蓝色";
 
         DataTable CSet = new DataTable();
+
+        int TotalSuccessNum = 0;
+
         public ColorMovePanel()
         {
             InitializeComponent();
@@ -66,46 +69,47 @@ namespace ColorMoveUI
         //重置数据
         public void ReSetColorData()
         {
+            TotalSuccessNum = 0;
             m_HistoryStep.Clear();
             CSet.Rows.Clear();
-            //for (int i = 0; i < 5; i++)
-            //{
-            //    DataRow row = CSet.NewRow();
-            //    row.ItemArray = new object[NCol] { 1, 2, 3, 4, 5 };
-            //    CSet.Rows.Add(row);
-            //}
-            //for (int i = 0; i < 3; i++)
-            //{
-            //    DataRow row = CSet.NewRow();
-            //    row.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
-            //    CSet.Rows.Add(row);
-            //}
+            for (int i = 0; i < 5; i++)
             {
                 DataRow row = CSet.NewRow();
-                row.ItemArray = new object[NCol] { 4, 2, 2, 3, 1 };
+                row.ItemArray = new object[NCol] { 1, 2, 3, 4, 5 };
                 CSet.Rows.Add(row);
-                DataRow row1 = CSet.NewRow();
-                row1.ItemArray = new object[NCol] { 5, 3, 1, 1, 4 };
-                CSet.Rows.Add(row1);
-                DataRow row2 = CSet.NewRow();
-                row2.ItemArray = new object[NCol] { 2, 3, 4, 2, 5 };
-                CSet.Rows.Add(row2);
-                DataRow row3 = CSet.NewRow();
-                row3.ItemArray = new object[NCol] { 1, 5, 1, 4, 5 };
-                CSet.Rows.Add(row3);
-                DataRow row4 = CSet.NewRow();
-                row4.ItemArray = new object[NCol] { 4, 0, 3, 0, 2 };
-                CSet.Rows.Add(row4);
-                DataRow row5 = CSet.NewRow();
-                row5.ItemArray = new object[NCol] { 0, 0, 5, 0, 3 };
-                CSet.Rows.Add(row5);
-                DataRow row6 = CSet.NewRow();
-                row6.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
-                CSet.Rows.Add(row6);
-                DataRow row7 = CSet.NewRow();
-                row7.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
-                CSet.Rows.Add(row7);
             }
+            for (int i = 0; i < 3; i++)
+            {
+                DataRow row = CSet.NewRow();
+                row.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
+                CSet.Rows.Add(row);
+            }
+            //{
+            //    DataRow row = CSet.NewRow();
+            //    row.ItemArray = new object[NCol] { 4, 2, 2, 3, 1 };
+            //    CSet.Rows.Add(row);
+            //    DataRow row1 = CSet.NewRow();
+            //    row1.ItemArray = new object[NCol] { 5, 3, 1, 1, 4 };
+            //    CSet.Rows.Add(row1);
+            //    DataRow row2 = CSet.NewRow();
+            //    row2.ItemArray = new object[NCol] { 2, 3, 4, 2, 5 };
+            //    CSet.Rows.Add(row2);
+            //    DataRow row3 = CSet.NewRow();
+            //    row3.ItemArray = new object[NCol] { 1, 5, 1, 4, 5 };
+            //    CSet.Rows.Add(row3);
+            //    DataRow row4 = CSet.NewRow();
+            //    row4.ItemArray = new object[NCol] { 4, 0, 3, 0, 2 };
+            //    CSet.Rows.Add(row4);
+            //    DataRow row5 = CSet.NewRow();
+            //    row5.ItemArray = new object[NCol] { 0, 0, 5, 0, 3 };
+            //    CSet.Rows.Add(row5);
+            //    DataRow row6 = CSet.NewRow();
+            //    row6.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
+            //    CSet.Rows.Add(row6);
+            //    DataRow row7 = CSet.NewRow();
+            //    row7.ItemArray = new object[NCol] { 0, 0, 0, 0, 0 };
+            //    CSet.Rows.Add(row7);
+            //}
             UpdateView();
         }
 
@@ -200,10 +204,7 @@ namespace ColorMoveUI
             return false;
         }
 
-
-
-        //打乱一下
-        private void ShuffleBtn_Click(object sender, RoutedEventArgs e)
+        private void ShuffleColor()
         {
             for(int i=0; i<100;i++)
             {
@@ -212,6 +213,13 @@ namespace ColorMoveUI
                 SwapValue(tempPos1, tempPos2);
             }
             UpdateView();
+        }
+
+
+        //打乱一下
+        private void ShuffleBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ShuffleColor();
         }
 
         //获取某个柱子的方块个数
@@ -261,6 +269,8 @@ namespace ColorMoveUI
             UpdateView();
             return true;
         }
+
+
 
         private bool MoveTo(Step step, bool record = true)
         {
@@ -409,8 +419,13 @@ namespace ColorMoveUI
                 //判断是否已经完成
                 if(IsGameSuccess())
                 {
-                    bAutoRun = false;
-                    Console.WriteLine("游戏成功了呀");
+                    //bAutoRun = false;
+                    TotalSuccessNum++;
+                    TotalSuccessLable.Content = TotalSuccessNum;
+                    Console.WriteLine("==============游戏成功了呀===========");
+
+                    Thread.Sleep(1000);
+                    ShuffleColor();
                 }
                 else
                 {
@@ -705,6 +720,11 @@ namespace ColorMoveUI
         }
 
         private void AutoStartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            AutoStep();
+        }
+
+        private void AutoStep()
         {
             bAutoRun = true;
             Task.Run(new Action(() =>
